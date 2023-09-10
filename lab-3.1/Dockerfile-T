@@ -1,0 +1,4 @@
+#wybranie obrazu
+FROM img-build:latest
+#uruchomienie tesow
+RUN bash ./run-tests.sh

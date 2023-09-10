@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  budowanie:
+    build:
+      context: .
+      dockerfile: Dockerfile-B
+    image: img-build
+  testowanie:
+    build:
+      context: .
+      dockerfile: Dockerfile-T
+    depends_on:
+      - budowanie

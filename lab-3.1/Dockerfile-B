@@ -1,0 +1,15 @@
+# wybor obrazu
+FROM ubuntu:latest
+# update i instalacja potrzebnych narzedzi
+RUN apt-get update -y
+RUN apt-get install libncurses5-dev libncursesw5-dev -y
+RUN apt-get install gcc -y
+RUN apt-get install make -y
+RUN apt-get install git -y
+#sklonowanie repozytorium
+RUN git clone https://github.com/alt-romes/programmer-calculator
+#przejscie do utworzonego katalogu
+WORKDIR programmer-calculator
+#zbudowanie aplikacji
+RUN make install
+RUN make
