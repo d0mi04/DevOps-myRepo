@@ -1,2 +1,2 @@
 FROM ubuntu
-RUN tar rvf prog-calc.tar prog-calc
+RUN tar rvf pcalc.tar pcalc
