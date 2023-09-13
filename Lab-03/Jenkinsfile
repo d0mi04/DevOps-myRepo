@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Prepare') {
+            steps {
+                echo 'Przygotowanie...'
+                sh "rm -rf DevOps-myRepo"
+                sh "docker system prune --all --force"
+                }
+            }
+         stage('Clone') {
+            steps {
+                echo 'Klonowanie...'
+                sh "git clone https://github.com/d0mi04/DevOps-myRepo"
+                dir('DevOps-myRepo'){
+                    sh "git checkout DK400521"
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Budowanie...'
+                dir('DevOps-myRepo/Lab-03/Build'){
+                    sh "docker build -t first-container ."
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testowanie...'
+                dir('DevOps-myRepo/Lab-03/Test'){
+                    sh 'docker build . -f Dockerfile-2 -t second-container'
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Wdrazanie...'
+                sh 'docker run --volume /var/jenkins_home/workspace/project-build/DevOps-myRepo/Lab-03:/v first-container mv ./bin/pcalc /v'
+                dir('DevOps-myRepo/Lab-03/Deploy') {
+                    sh 'docker build . -f Dockerfile-4 -t deploy'
+                }
+                sh 'docker run -t --name deployPcalc --volume /var/jenkins_home/workspace/project-build/DevOps-myRepo/Lab-03:/v deploy v/pcalc&'
+                
+                sh 'docker container stop deployPcalc'
+                sh 'docker container rm deployPcalc'
+                
+            }
+        }
+        stage('Publish') {
+            steps {
+                echo 'PUBLISHING...'
+                dir('DevOps-myRepo/Lab-03/Publish') {
+		            sh 'docker build . -f Dockerfile-5 -t publisher'
+            	}
+            	sh 'docker run --volume /var/jenkins_home/workspace/project-build/DevOps-myRepo/Lab-03:/v publisher mv pcalc.tar /v'
+            }   
+            
+        }
+    }
+} 
